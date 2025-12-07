@@ -1,4 +1,3 @@
-/* index.css */
 body {
   margin: 0;
   background: #f5f7fb;
@@ -6,7 +5,8 @@ body {
 }
 
 .dashboard {
-  padding: 16px 24px;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .header {
@@ -15,62 +15,40 @@ body {
   align-items: center;
 }
 
+/* SEARCH BAR */
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: #6b7280;
+  pointer-events: none;
+}
+
 .search-input {
   padding: 8px 12px;
   width: 260px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
 }
 
+.search-input.with-icon {
+  padding-left: 36px;
+}
+
+/* FILTERS */
 .filter-row {
   display: flex;
   justify-content: space-between;
   margin: 12px 0;
 }
-
-.filters select,
-.filters input {
-  margin-right: 8px;
-  padding: 6px;
-  border-radius: 6px;
-}
-
-.stats-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.stat-card {
-  background: white;
-  padding: 12px;
-  border-radius: 10px;
-  width: 200px;
-  box-shadow: 0 0 6px rgba(0,0,0,0.06);
-}
-
-.sales-table {
-  width: 100%;
-  background: white;
-  border-radius: 10px;
-  border-collapse: collapse;
-}
-
-.sales-table th, .sales-table td {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  text-align: left;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 12px;
-  gap: 10px;
-}
-
-
-
 
 .filters {
   display: flex;
@@ -78,6 +56,15 @@ body {
   gap: 8px;
 }
 
+.filters select,
+.filters input {
+  margin-right: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Refresh button */
 .refresh-btn {
   width: 32px;
   height: 32px;
@@ -95,7 +82,127 @@ body {
   background: #e5e7eb;
 }
 
+/* KPI CARDS */
+.stats-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
 
+.stat-card {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 10px;
+  width: 200px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.06);
+}
+
+/* TABLE */
+.sales-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sales-table-wrapper::-webkit-scrollbar {
+  height: 0px;
+}
+
+.sales-table {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border-collapse: collapse;
+  overflow: hidden;
+  margin-bottom: 20px;
+  table-layout: auto;
+}
+
+/* Table header */
+.sales-table thead th {
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  background: #f3f3f3;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  white-space: nowrap;
+  max-width: 160px;
+}
+
+.sales-table tbody td {
+  padding: 16px 18px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #111827;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-table th:last-child,
+.sales-table td:last-child {
+  min-width: 160px;
+  white-space: nowrap;
+}
+
+.sales-table td:nth-child(13) {
+  max-width: 200px;
+}
+
+.sales-table tbody tr {
+  height: 52px;
+}
+
+.sales-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.bold-cell {
+  font-weight: 700;
+  color: #000000;
+}
+
+/* PAGINATION */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 22px;
+  gap: 8px;
+}
+
+.pagination button {
+  min-width: 36px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background: #f3f4f6;
+}
+
+.pagination .active {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.pagination .disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* DATE FILTER */
 .date-wrapper {
   position: relative;
 }

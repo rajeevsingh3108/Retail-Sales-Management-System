@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function SalesTable({ sales }) {
   return (
@@ -27,15 +27,31 @@ export default function SalesTable({ sales }) {
             <td>{new Date(s.date).toLocaleDateString()}</td>
             <td>{s.customerId}</td>
             <td>{s.customerName}</td>
-            <td>{s.phoneNumber}</td>
+            <td style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              {s.phoneNumber}
+              <button
+                onClick={() => navigator.clipboard.writeText(s.phoneNumber)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "#7A7B8E",
+                  fontSize: "14px",
+                }}
+                title="Copy"
+              >
+                ⧉
+              </button>
+            </td>
+
             <td>{s.gender}</td>
             <td>{s.age}</td>
-            <td>{s.productCategory}</td>
-            <td>{s.quantity}</td>
-            <td>₹ {s.finalAmount}</td>
-            <td>{s.customerRegion}</td>
-            <td>{s.prouctId}</td>
-            <td>{s.employeeName}</td>
+            <td className="bold-cell">{s.productCategory}</td>
+            <td className="bold-cell">{s.quantity}</td>
+            <td className="bold-cell">₹ {s.finalAmount}</td>
+            <td className="bold-cell">{s.customerRegion}</td>
+            <td className="bold-cell">{s.productId}</td>
+            <td className="bold-cell">{s.employeeName}</td>
           </tr>
         ))}
       </tbody>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchTags } from "../services/api";
 
-const REGION_OPTIONS = ["North", "South", "East", "West"];
+const REGION_OPTIONS = ["North", "South", "East", "West", "Central"];
 const GENDER_OPTIONS = ["Male", "Female"];
 const CATEGORY_OPTIONS = ["Electronics", "Clothing", "Beauty"];
 const PAYMENT_OPTIONS = [
@@ -75,7 +75,9 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         <option value="">Customer Region</option>
         {REGION_OPTIONS.map((r) => (
-          <option key={r} value={r}>{r}</option>
+          <option key={r} value={r}>
+            {r}
+          </option>
         ))}
       </select>
 
@@ -85,7 +87,9 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         <option value="">Gender</option>
         {GENDER_OPTIONS.map((g) => (
-          <option key={g} value={g}>{g}</option>
+          <option key={g} value={g}>
+            {g}
+          </option>
         ))}
       </select>
 
@@ -116,7 +120,9 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         <option value="">Product Category</option>
         {CATEGORY_OPTIONS.map((c) => (
-          <option key={c} value={c}>{c}</option>
+          <option key={c} value={c}>
+            {c}
+          </option>
         ))}
       </select>
 
@@ -126,7 +132,9 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         <option value="">Tags</option>
         {dynamicTags.map((t) => (
-          <option key={t} value={t}>{t}</option>
+          <option key={t} value={t}>
+            {t}
+          </option>
         ))}
       </select>
 
@@ -136,14 +144,20 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         <option value="">Payment Method</option>
         {PAYMENT_OPTIONS.map((p) => (
-          <option key={p} value={p}>{p}</option>
+          <option key={p} value={p}>
+            {p}
+          </option>
         ))}
       </select>
 
       <div className="date-wrapper">
-        <button type="button" className="date-btn">
-          {dateDisplay}
-        </button>
+        <select className="date-native-look" value="">
+          <option>
+            {filters.startDate && filters.endDate
+              ? `${filters.startDate} → ${filters.endDate}`
+              : "Date"}
+          </option>
+        </select>
 
         <input
           type="date"
@@ -161,9 +175,7 @@ function FiltersPanel({ filters, setFilters, onReset }) {
               setDateStep(1);
             } else {
               const end =
-                selectedDate < tempStartDate
-                  ? tempStartDate
-                  : selectedDate;
+                selectedDate < tempStartDate ? tempStartDate : selectedDate;
 
               setFilters((prev) => ({
                 ...prev,
