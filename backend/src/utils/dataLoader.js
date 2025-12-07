@@ -11,8 +11,10 @@ function loadSalesData() {
     }
 
     const results = [];
-    const filePath = path.join(__dirname, '..', 'data', 'sales_data.csv');
+    //const filePath = path.join(__dirname, '..', 'data', 'sales_data.csv');
+    const filePath = "/data/sales_data.csv";
 
+    
     fs.createReadStream(filePath)
       .pipe(csv())
       .on('data', (row) => {
