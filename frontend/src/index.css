@@ -222,3 +222,35 @@ body {
   opacity: 0;
   cursor: pointer;
 }
+
+
+.tag-multiselect {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.selected-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.tag-chip {
+  background: #eef2ff;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tag-chip-remove {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+}

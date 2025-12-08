@@ -15,8 +15,8 @@ const PAYMENT_OPTIONS = [
 
 function FiltersPanel({ filters, setFilters, onReset }) {
   const [dynamicTags, setDynamicTags] = useState([]);
-  const [dateStep, setDateStep] = useState(0);
-  const [tempStartDate, setTempStartDate] = useState("");
+
+  const [showDatePanel, setShowDatePanel] = useState(false);
 
   useEffect(() => {
     loadTags();
@@ -31,18 +31,27 @@ function FiltersPanel({ filters, setFilters, onReset }) {
     }
   }
 
-  const handleMultiSelect = (key, value) => {
-    if (!value) return;
+  const handleSingleSelect = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value ? [value] : [],
+    }));
+  };
 
+  const handleAddTag = (value) => {
+    if (!value) return;
     setFilters((prev) => {
-      const list = prev[key] || [];
-      return {
-        ...prev,
-        [key]: list.includes(value)
-          ? list.filter((v) => v !== value)
-          : [...list, value],
-      };
+      const list = prev.tags || [];
+      if (list.includes(value)) return prev;
+      return { ...prev, tags: [...list, value] };
     });
+  };
+
+  const handleRemoveTag = (tag) => {
+    setFilters((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((t) => t !== tag),
+    }));
   };
 
   const ageValue =
@@ -57,16 +66,15 @@ function FiltersPanel({ filters, setFilters, onReset }) {
         className="refresh-btn"
         onClick={() => {
           onReset();
-          setDateStep(0);
-          setTempStartDate("");
+          setShowDatePanel(false);
         }}
       >
         ⟳
       </button>
 
       <select
-        value={filters.region[filters.region.length - 1] || ""}
-        onChange={(e) => handleMultiSelect("region", e.target.value)}
+        value={filters.region[0] || ""}
+        onChange={(e) => handleSingleSelect("region", e.target.value)}
       >
         <option value="">Customer Region</option>
         {REGION_OPTIONS.map((r) => (
@@ -77,8 +85,8 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       </select>
 
       <select
-        value={filters.gender[filters.gender.length - 1] || ""}
-        onChange={(e) => handleMultiSelect("gender", e.target.value)}
+        value={filters.gender[0] || ""}
+        onChange={(e) => handleSingleSelect("gender", e.target.value)}
       >
         <option value="">Gender</option>
         {GENDER_OPTIONS.map((g) => (
@@ -110,8 +118,8 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       </select>
 
       <select
-        value={filters.category[filters.category.length - 1] || ""}
-        onChange={(e) => handleMultiSelect("category", e.target.value)}
+        value={filters.category[0] || ""}
+        onChange={(e) => handleSingleSelect("category", e.target.value)}
       >
         <option value="">Product Category</option>
         {CATEGORY_OPTIONS.map((c) => (
@@ -121,24 +129,38 @@ function FiltersPanel({ filters, setFilters, onReset }) {
         ))}
       </select>
 
-      <select
-        value={filters.tags[filters.tags.length - 1] || ""}
-        onChange={(e) => handleMultiSelect("tags", e.target.value)}
-      >
-        <option value="">Tags</option>
-        {dynamicTags.map((t) => (
-          <option key={t} value={t}>
-            {t}
-          </option>
-        ))}
-      </select>
+      <div className="tag-multiselect">
+        <select value="" onChange={(e) => handleAddTag(e.target.value)}>
+          <option value="">Tags</option>
+          {dynamicTags.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+
+        {filters.tags.length > 0 && (
+          <div className="selected-tags">
+            {filters.tags.map((tag) => (
+              <span key={tag} className="tag-chip">
+                {tag}
+                <button
+                  type="button"
+                  className="tag-chip-remove"
+                  onClick={() => handleRemoveTag(tag)}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
 
       <select
-        value={
-          filters.paymentMethod[filters.paymentMethod.length - 1] || ""
-        }
+        value={filters.paymentMethod[0] || ""}
         onChange={(e) =>
-          handleMultiSelect("paymentMethod", e.target.value)
+          handleSingleSelect("paymentMethod", e.target.value)
         }
       >
         <option value="">Payment Method</option>
@@ -148,46 +170,74 @@ function FiltersPanel({ filters, setFilters, onReset }) {
           </option>
         ))}
       </select>
+
       <div className="date-wrapper">
-        <select className="date-native-look" defaultValue="">
-  <option value="">
-    {filters.startDate && filters.endDate
-      ? `${filters.startDate} → ${filters.endDate}`
-      : "Date"}
-  </option>
-</select>
+        <button
+          type="button"
+          className="date-button"
+          onClick={() => setShowDatePanel((prev) => !prev)}
+        >
+          {filters.startDate && filters.endDate
+            ? `${filters.startDate} → ${filters.endDate}`
+            : "Date"}
+        </button>
 
+        {showDatePanel && (
+          <div className="date-panel">
+            <div className="date-panel-field">
+              <label>Start Date</label>
+              <input
+                type="date"
+                value={filters.startDate || ""}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    startDate: e.target.value,
+                  }))
+                }
+              />
+            </div>
 
-        <input
-          type="date"
-          className="date-overlay"
-          onChange={(e) => {
-            const selectedDate = e.target.value;
+            <div className="date-panel-field">
+              <label>End Date</label>
+              <input
+                type="date"
+                value={filters.endDate || ""}
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    endDate: e.target.value,
+                  }))
+                }
+              />
+            </div>
 
-            if (dateStep === 0) {
-              setTempStartDate(selectedDate);
-              setFilters((prev) => ({
-                ...prev,
-                startDate: selectedDate,
-                endDate: "",
-              }));
-              setDateStep(1);
-            } else {
-              const end =
-                selectedDate < tempStartDate
-                  ? tempStartDate
-                  : selectedDate;
+            <div className="date-panel-actions">
+              <button
+                type="button"
+                className="date-apply"
+                onClick={() => setShowDatePanel(false)}
+              >
+                Apply
+              </button>
 
-              setFilters((prev) => ({
-                ...prev,
-                startDate: tempStartDate,
-                endDate: end,
-              }));
-              setTempStartDate("");
-              setDateStep(0);
-            }
-          }}
-        />
+              <button
+                type="button"
+                className="date-clear"
+                onClick={() => {
+                  setFilters((prev) => ({
+                    ...prev,
+                    startDate: "",
+                    endDate: "",
+                  }));
+                  setShowDatePanel(false);
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
