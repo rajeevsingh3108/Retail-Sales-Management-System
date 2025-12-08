@@ -35,3 +35,5 @@ pnpm-lock.yaml
 *.njsproj
 *.sln
 
+*.csv
+backend/src/data/

@@ -15,7 +15,6 @@ const PAYMENT_OPTIONS = [
 
 function FiltersPanel({ filters, setFilters, onReset }) {
   const [dynamicTags, setDynamicTags] = useState([]);
-
   const [dateStep, setDateStep] = useState(0);
   const [tempStartDate, setTempStartDate] = useState("");
 
@@ -26,7 +25,7 @@ function FiltersPanel({ filters, setFilters, onReset }) {
   async function loadTags() {
     try {
       const tags = await fetchTags();
-      setDynamicTags(tags);
+      setDynamicTags(tags || []);
     } catch (err) {
       console.error("Failed to fetch tags:", err);
     }
@@ -51,11 +50,6 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       ? `${filters.minAge}-${filters.maxAge}`
       : "";
 
-  const dateDisplay =
-    filters.startDate && filters.endDate
-      ? `${filters.startDate} → ${filters.endDate}`
-      : "Date";
-
   return (
     <div className="filters">
       <button
@@ -69,6 +63,7 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       >
         ⟳
       </button>
+
       <select
         value={filters.region[filters.region.length - 1] || ""}
         onChange={(e) => handleMultiSelect("region", e.target.value)}
@@ -139,8 +134,12 @@ function FiltersPanel({ filters, setFilters, onReset }) {
       </select>
 
       <select
-        value={filters.paymentMethod[filters.paymentMethod.length - 1] || ""}
-        onChange={(e) => handleMultiSelect("paymentMethod", e.target.value)}
+        value={
+          filters.paymentMethod[filters.paymentMethod.length - 1] || ""
+        }
+        onChange={(e) =>
+          handleMultiSelect("paymentMethod", e.target.value)
+        }
       >
         <option value="">Payment Method</option>
         {PAYMENT_OPTIONS.map((p) => (
@@ -149,15 +148,15 @@ function FiltersPanel({ filters, setFilters, onReset }) {
           </option>
         ))}
       </select>
-
       <div className="date-wrapper">
-        <select className="date-native-look" value="">
-          <option>
-            {filters.startDate && filters.endDate
-              ? `${filters.startDate} → ${filters.endDate}`
-              : "Date"}
-          </option>
-        </select>
+        <select className="date-native-look" defaultValue="">
+  <option value="">
+    {filters.startDate && filters.endDate
+      ? `${filters.startDate} → ${filters.endDate}`
+      : "Date"}
+  </option>
+</select>
+
 
         <input
           type="date"
@@ -175,7 +174,9 @@ function FiltersPanel({ filters, setFilters, onReset }) {
               setDateStep(1);
             } else {
               const end =
-                selectedDate < tempStartDate ? tempStartDate : selectedDate;
+                selectedDate < tempStartDate
+                  ? tempStartDate
+                  : selectedDate;
 
               setFilters((prev) => ({
                 ...prev,

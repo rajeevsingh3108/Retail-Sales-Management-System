@@ -14,9 +14,11 @@ export default function SearchBar({ value, onChange }) {
       </svg>
 
       <input
+        type="text"
         className="search-input with-icon"
         placeholder="Name, Phone no."
         value={value}
+        autoComplete="off"
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

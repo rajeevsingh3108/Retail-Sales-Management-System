@@ -1,8 +1,11 @@
-const { getAllSales } = require('../utils/dataLoader');
+import Sale from "../models/Sale.js";
 
 function parseListParam(value) {
   if (!value) return [];
-  return value.split(',').map((v) => v.trim()).filter(Boolean);
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 function parseNumber(value, fallback = null) {
@@ -10,7 +13,53 @@ function parseNumber(value, fallback = null) {
   return Number.isNaN(n) ? fallback : n;
 }
 
-async function getSales(options) {
+console.log(query);
+export function buildOptionsFromQuery(query) {
+  console.log(query);
+  const regions = parseListParam(query.region);
+  const genders = parseListParam(query.gender);
+  const categories = parseListParam(query.category);
+  const tags = parseListParam(query.tags);
+  const paymentMethods = parseListParam(query.paymentMethod);
+
+  const minAge = query.minAge ? parseNumber(query.minAge) : null;
+  const maxAge = query.maxAge ? parseNumber(query.maxAge) : null;
+
+  let finalMinAge = minAge;
+  let finalMaxAge = maxAge;
+
+  if (
+    finalMinAge !== null &&
+    finalMaxAge !== null &&
+    finalMinAge > finalMaxAge
+  ) {
+    const temp = finalMinAge;
+    finalMinAge = finalMaxAge;
+    finalMaxAge = temp;
+  }
+
+  const page = query.page ? parseNumber(query.page, 1) : 1;
+  const limit = query.limit ? parseNumber(query.limit, 10) : 10;
+
+  return {
+    search: query.search || "",
+    regions,
+    genders,
+    minAge: finalMinAge,
+    maxAge: finalMaxAge,
+    categories,
+    tags,
+    paymentMethods,
+    startDate: query.startDate || null,
+    endDate: query.endDate || null,
+    sortBy: query.sortBy || "date",
+    sortOrder: query.sortOrder || "desc",
+    page,
+    limit,
+  };
+}
+
+export async function getSales(options) {
   const {
     search,
     regions,
@@ -28,206 +77,79 @@ async function getSales(options) {
     limit,
   } = options;
 
-  const allSales = await getAllSales();
-
-  let filtered = allSales;
-
-  // Search Customer
+  const query = {};
   if (search) {
-    const s = search.toLowerCase();
-    filtered = filtered.filter((sale) => {
-      const nameMatch =
-        sale.customerName &&
-        sale.customerName.toLowerCase().includes(s);
-      const phoneMatch =
-        sale.phoneNumber && sale.phoneNumber.includes(search);
-      return nameMatch || phoneMatch;
-    });
+    query.$or = [
+      { "Customer Name": { $regex: search, $options: "i" } },
+      { "Phone Number": { $regex: search, $options: "i" } },
+    ];
+  }
+  if (regions.length > 0) {
+    query["Customer Region"] = { $in: regions };
   }
 
-  // Filter
-if (regions && regions.length > 0) {
-  const normalizedRegions = regions.map(r =>
-    r.trim().toLowerCase()
-  );
+  if (genders.length > 0) {
+    query["Gender"] = { $in: genders };
+  }
 
-  filtered = filtered.filter((sale) => {
-    return normalizedRegions.includes(
-      sale.customerRegion?.trim().toLowerCase()
-    );
-  });
-}
+  if (categories.length > 0) {
+    query["Product Category"] = { $in: categories };
+  }
 
-//Gender
-if (genders && genders.length > 0) {
-  const normalizedGenders = genders.map(g =>
-    g.trim().toLowerCase()
-  );
-
-  filtered = filtered.filter((sale) => {
-    return normalizedGenders.includes(
-      sale.gender?.trim().toLowerCase()
-    );
-  });
-}
-
-
-  // Age range
+  if (paymentMethods.length > 0) {
+    query["Payment Method"] = { $in: paymentMethods };
+  }
   if (minAge !== null || maxAge !== null) {
-    filtered = filtered.filter((sale) => {
-      if (sale.age == null) return false;
-      if (minAge !== null && sale.age < minAge) return false;
-      if (maxAge !== null && sale.age > maxAge) return false;
-      return true;
-    });
+    query["Age"] = {};
+    if (minAge !== null) query["Age"].$gte = minAge;
+    if (maxAge !== null) query["Age"].$lte = maxAge;
   }
-
-  // Product category
-if (categories && categories.length > 0) {
-  const normalizedCategories = categories.map(c =>
-    c.toString().trim().toLowerCase()
-  );
-
-  filtered = filtered.filter((sale) => {
-    if (!sale.productCategory) return false;
-
-    return normalizedCategories.includes(
-      sale.productCategory.toString().trim().toLowerCase()
-    );
-  });
-}
-
-
-  // Tags 
-  if (tags && tags.length > 0) {
-    filtered = filtered.filter((sale) => {
-      if (!sale.tags || sale.tags.length === 0) return false;
-      return sale.tags.some((t) => tags.includes(t));
-    });
-  }
-
-  // Payment
-if (paymentMethods && paymentMethods.length > 0) {
-  const normalizedPayments = paymentMethods.map(p =>
-    p.toString().trim().toLowerCase()
-  );
-
-  filtered = filtered.filter((sale) => {
-    if (!sale.paymentMethod) return false;
-
-    return normalizedPayments.includes(
-      sale.paymentMethod.toString().trim().toLowerCase()
-    );
-  });
-}
-
-
-  // Date range
   if (startDate || endDate) {
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-
-    filtered = filtered.filter((sale) => {
-      if (!sale.date) return false;
-      if (start && sale.date < start) return false;
-      if (end && sale.date > end) return false;
-      return true;
-    });
+    query["Date"] = {};
+    if (startDate) query["Date"].$gte = new Date(startDate);
+    if (endDate) query["Date"].$lte = new Date(endDate);
+  }
+  if (tags.length > 0) {
+    query["Tags"] = {
+      $regex: tags.join("|"),
+      $options: "i",
+    };
   }
 
-  // Sorting
-  const sortKey = sortBy || 'date';
-  const order = sortOrder === 'asc' ? 1 : -1; 
+  const sort = {};
+  const order = sortOrder === "asc" ? 1 : -1;
 
-  filtered.sort((a, b) => {
-    let valA;
-    let valB;
+  if (sortBy === "quantity") {
+    sort["Quantity"] = order;
+  } else if (sortBy === "customerName") {
+    sort["Customer Name"] = order;
+  } else {
+    sort["Date"] = order;
+  }
 
-    if (sortKey === 'quantity') {
-      valA = a.quantity || 0;
-      valB = b.quantity || 0;
-    } else if (sortKey === 'customerName') {
-      valA = a.customerName || '';
-      valB = b.customerName || '';
-      return valA.localeCompare(valB) * order;
-    } else {
-      valA = a.date ? a.date.getTime() : 0;
-      valB = b.date ? b.date.getTime() : 0;
-    }
+  const skip = (page - 1) * limit;
 
-    if (valA < valB) return -1 * order;
-    if (valA > valB) return 1 * order;
-    return 0;
-  });
+  const totalItems = await Sale.countDocuments(query);
 
-  // Pagination
-  const pageNum = page || 1;
-  const pageSize = limit || 10;
-  const totalItems = filtered.length;
-  const totalPages = Math.ceil(totalItems / pageSize) || 1;
+  const data = await Sale.find(query)
+    .sort(sort)
+    .skip(skip)
+    .limit(limit);
+  console.log("SALES DATA FETCHED:");
+  console.log("Total records returned:", data.length);
+  console.log("Sample record:", data[0]);
 
-  const startIndex = (pageNum - 1) * pageSize;
-  const pageData = filtered.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  const totalPages = Math.ceil(totalItems / limit) || 1;
 
   return {
-    data: pageData,
+    data,
     meta: {
-      page: pageNum,
-      limit: pageSize,
+      page,
+      limit,
       totalItems,
       totalPages,
-      hasNext: pageNum < totalPages,
-      hasPrev: pageNum > 1,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
     },
   };
 }
-
-function buildOptionsFromQuery(query) {
-  const regions = parseListParam(query.region);
-  const genders = parseListParam(query.gender);
-  const categories = parseListParam(query.category);
-  const tags = parseListParam(query.tags);
-  const paymentMethods = parseListParam(query.paymentMethod);
-
-  const minAge = query.minAge ? parseNumber(query.minAge) : null;
-  const maxAge = query.maxAge ? parseNumber(query.maxAge) : null;
-
-  const page = query.page ? parseNumber(query.page, 1) : 1;
-  const limit = query.limit ? parseNumber(query.limit, 10) : 10;
-  let finalMinAge = minAge;
-  let finalMaxAge = maxAge;
-  if (
-    finalMinAge !== null &&
-    finalMaxAge !== null &&
-    finalMinAge > finalMaxAge
-  ) {
-    const temp = finalMinAge;
-    finalMinAge = finalMaxAge;
-    finalMaxAge = temp;
-  }
-
-  return {
-    search: query.search || '',
-    regions,
-    genders,
-    minAge: finalMinAge,
-    maxAge: finalMaxAge,
-    categories,
-    tags,
-    paymentMethods,
-    startDate: query.startDate || null,
-    endDate: query.endDate || null,
-    sortBy: query.sortBy || 'date',
-    sortOrder: query.sortOrder || 'desc',
-    page,
-    limit,
-  };
-}
-
-module.exports = {
-  getSales,
-  buildOptionsFromQuery,
-};

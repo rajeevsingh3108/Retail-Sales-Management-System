@@ -44,7 +44,6 @@ function App() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const resetAll = () => {
     setSearch("");
     setFilters({
@@ -62,7 +61,6 @@ function App() {
     setSortBy("customerName");
     setSortOrder("asc");
   };
-
   async function loadData() {
     try {
       setLoading(true);
@@ -71,22 +69,28 @@ function App() {
       const params = {
         search: search || undefined,
 
-        region: filters.region.length ? filters.region.join(",") : undefined,
+        region: filters.region.length
+          ? filters.region.join(",")
+          : undefined,
 
-        gender: filters.gender.length ? filters.gender.join(",") : undefined,
+        gender: filters.gender.length
+          ? filters.gender.join(",")
+          : undefined,
 
         category: filters.category.length
           ? filters.category.join(",")
           : undefined,
 
-        tags: filters.tags.length ? filters.tags.join(",") : undefined,
+        tags: filters.tags.length
+          ? filters.tags.join(",")
+          : undefined,
 
         paymentMethod: filters.paymentMethod.length
           ? filters.paymentMethod.join(",")
           : undefined,
 
-        minAge: filters.minAge ? filters.minAge : undefined,
-        maxAge: filters.maxAge ? filters.maxAge : undefined,
+        minAge: filters.minAge || undefined,
+        maxAge: filters.maxAge || undefined,
 
         startDate: filters.startDate || undefined,
         endDate: filters.endDate || undefined,
@@ -97,21 +101,26 @@ function App() {
         limit,
       };
 
-      const data = await fetchSales(params);
+      const response = await fetchSales(params);
+      setSales(response.data);
 
-      setSales(data.data);
-      setMeta(data.meta);
-
-      const totalUnits = data.data.reduce(
-        (sum, x) => sum + (x.quantity || 0),
+      setMeta({
+        page: response.currentPage,
+        totalPages: response.totalPages,
+        hasNext: response.currentPage < response.totalPages,
+        hasPrev: response.currentPage > 1,
+      });
+      const totalUnits = response.data.reduce(
+        (sum, x) => sum + (x["Quantity"] || 0),
         0
       );
-      const totalAmount = data.data.reduce(
-        (sum, x) => sum + (x.finalAmount || 0),
+      const totalAmount = response.data.reduce(
+        (sum, x) => sum + (x["Final Amount"] || 0),
         0
       );
-      const totalDiscount = data.data.reduce(
-        (sum, x) => sum + (x.discountPercentage || 0),
+
+      const totalDiscount = response.data.reduce(
+        (sum, x) => sum + (x["Discount Percentage"] || 0),
         0
       );
 

@@ -1,23 +1,31 @@
-const { getAllSales } = require("../utils/dataLoader");
+import Sale from "../models/Sale.js";
 
-async function getAllTags(req, res) {
+export const getAllTags = async (req, res) => {
   try {
-    const sales = await getAllSales();
+    const sales = await Sale.find({}, { "Tags": 1, _id: 0 });
+
     const tagSet = new Set();
 
     sales.forEach((sale) => {
-      if (Array.isArray(sale.tags)) {
-        sale.tags.forEach(tag => tagSet.add(tag));
+      if (sale.Tags && typeof sale.Tags === "string") {
+        sale.Tags.split(",").forEach((tag) => {
+          tagSet.add(tag.trim());
+        });
       }
     });
 
-    res.json({
-      tags: Array.from(tagSet).sort()
+    console.log("TAGS FOUND:", Array.from(tagSet));
+
+    res.status(200).json({
+      success: true,
+      tags: Array.from(tagSet)
     });
   } catch (err) {
-    console.error("Error fetching tags:", err);
-    res.status(500).json({ message: "Failed to fetch tags" });
+    console.error("Tag Fetch Error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch tags"
+    });
   }
-}
+};
 
-module.exports = { getAllTags };

@@ -1,10 +1,36 @@
-import React from 'react';
-export default function Pagination({ page, totalPages, hasNext, hasPrev, onNext, onPrev }) {
+import React from "react";
+
+export default function Pagination({
+  page,
+  totalPages,
+  hasNext,
+  hasPrev,
+  onNext,
+  onPrev,
+}) {
   return (
     <div className="pagination">
-      <button disabled={!hasPrev} onClick={onPrev}>Prev</button>
-      <span>{page}</span>
-      <button disabled={!hasNext} onClick={onNext}>Next</button>
+      <button
+        type="button"
+        disabled={!hasPrev}
+        onClick={onPrev}
+        aria-disabled={!hasPrev}
+      >
+        Prev
+      </button>
+
+      <span>
+        Page <b>{page}</b> of <b>{totalPages}</b>
+      </span>
+
+      <button
+        type="button"
+        disabled={!hasNext}
+        onClick={onNext}
+        aria-disabled={!hasNext}
+      >
+        Next
+      </button>
     </div>
   );
 }

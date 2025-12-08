@@ -8,8 +8,8 @@ export default function SalesTable({ sales }) {
           <th>Transaction ID</th>
           <th>Date</th>
           <th>Customer ID</th>
-          <th>Customer name</th>
-          <th>Phone number</th>
+          <th>Customer Name</th>
+          <th>Phone Number</th>
           <th>Gender</th>
           <th>Age</th>
           <th>Product Category</th>
@@ -20,17 +20,34 @@ export default function SalesTable({ sales }) {
           <th>Employee Name</th>
         </tr>
       </thead>
+
       <tbody>
         {sales.map((s) => (
-          <tr key={s.transactionId}>
-            <td>{s.transactionId}</td>
-            <td>{new Date(s.date).toLocaleDateString()}</td>
-            <td>{s.customerId}</td>
-            <td>{s.customerName}</td>
-            <td style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              {s.phoneNumber}
+          <tr key={s["Transaction ID"]}>
+            <td>{s["Transaction ID"]}</td>
+
+            <td>
+              {s["Date"]
+                ? new Date(s["Date"]).toLocaleDateString()
+                : "-"}
+            </td>
+
+            <td>{s["Customer ID"]}</td>
+
+            <td>{s["Customer Name"]}</td>
+
+            <td
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              {s["Phone Number"]}
               <button
-                onClick={() => navigator.clipboard.writeText(s.phoneNumber)}
+                onClick={() =>
+                  navigator.clipboard.writeText(s["Phone Number"])
+                }
                 style={{
                   background: "none",
                   border: "none",
@@ -44,14 +61,29 @@ export default function SalesTable({ sales }) {
               </button>
             </td>
 
-            <td>{s.gender}</td>
-            <td>{s.age}</td>
-            <td className="bold-cell">{s.productCategory}</td>
-            <td className="bold-cell">{s.quantity}</td>
-            <td className="bold-cell">₹ {s.finalAmount}</td>
-            <td className="bold-cell">{s.customerRegion}</td>
-            <td className="bold-cell">{s.productId}</td>
-            <td className="bold-cell">{s.employeeName}</td>
+            <td>{s["Gender"]}</td>
+
+            <td>{s["Age"]}</td>
+
+            <td className="bold-cell">
+              {s["Product Category"]}
+            </td>
+
+            <td className="bold-cell">{s["Quantity"]}</td>
+
+            <td className="bold-cell">
+              ₹ {s["Final Amount"]}
+            </td>
+
+            <td className="bold-cell">
+              {s["Customer Region"]}
+            </td>
+
+            <td className="bold-cell">{s["Product ID"]}</td>
+
+            <td className="bold-cell">
+              {s["Employee Name"]}
+            </td>
           </tr>
         ))}
       </tbody>

@@ -1,9 +1,7 @@
-// backend/src/routes/salesRoutes.js
-const express = require('express');
-const { handleGetSales } = require('../controllers/salesController');
+import express from "express";
+import { getSales } from "../controllers/salesController.js";
 
 const router = express.Router();
+router.get("/", getSales);
 
-router.get('/', handleGetSales);
-
-module.exports = router;
+export default router;

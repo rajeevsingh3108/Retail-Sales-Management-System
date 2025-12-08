@@ -1,8 +1,6 @@
-const express = require("express");
-const { getAllTags } = require("../controllers/metaController");
+import express from "express";
+import { getAllTags } from "../controllers/metaController.js";
 
 const router = express.Router();
-
 router.get("/tags", getAllTags);
-
-module.exports = router;
+export default router;
