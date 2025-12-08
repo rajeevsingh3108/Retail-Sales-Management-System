@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://retail-sales-management-system-l02b.onrender.com/",
+  baseURL: "https://retail-sales-management-system-l02b.onrender.com",
 });
 export async function fetchSales(params) {
   try {
