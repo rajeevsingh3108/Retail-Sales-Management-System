@@ -171,74 +171,80 @@ function FiltersPanel({ filters, setFilters, onReset }) {
         ))}
       </select>
 
-      <div className="date-wrapper">
+     <div className="date-wrapper">
+  <select
+    className="date-button"
+    value=""
+    onMouseDown={(e) => {
+      e.preventDefault();     
+      setShowDatePanel(true); 
+    }}
+  >
+    <option value="">
+      {filters.startDate && filters.endDate
+        ? `${filters.startDate} → ${filters.endDate}`
+        : "Date"}
+    </option>
+  </select>
+
+  {showDatePanel && (
+    <div className="date-panel">
+      <div className="date-panel-field">
+        <label>Start Date</label>
+        <input
+          type="date"
+          value={filters.startDate || ""}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              startDate: e.target.value,
+            }))
+          }
+        />
+      </div>
+
+      <div className="date-panel-field">
+        <label>End Date</label>
+        <input
+          type="date"
+          value={filters.endDate || ""}
+          onChange={(e) =>
+            setFilters((prev) => ({
+              ...prev,
+              endDate: e.target.value,
+            }))
+          }
+        />
+      </div>
+
+      <div className="date-panel-actions">
         <button
           type="button"
-          className="date-button"
-          onClick={() => setShowDatePanel((prev) => !prev)}
+          className="date-apply"
+          onClick={() => setShowDatePanel(false)}
         >
-          {filters.startDate && filters.endDate
-            ? `${filters.startDate} → ${filters.endDate}`
-            : "Date"}
+          Apply
         </button>
 
-        {showDatePanel && (
-          <div className="date-panel">
-            <div className="date-panel-field">
-              <label>Start Date</label>
-              <input
-                type="date"
-                value={filters.startDate || ""}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    startDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="date-panel-field">
-              <label>End Date</label>
-              <input
-                type="date"
-                value={filters.endDate || ""}
-                onChange={(e) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    endDate: e.target.value,
-                  }))
-                }
-              />
-            </div>
-
-            <div className="date-panel-actions">
-              <button
-                type="button"
-                className="date-apply"
-                onClick={() => setShowDatePanel(false)}
-              >
-                Apply
-              </button>
-
-              <button
-                type="button"
-                className="date-clear"
-                onClick={() => {
-                  setFilters((prev) => ({
-                    ...prev,
-                    startDate: "",
-                    endDate: "",
-                  }));
-                  setShowDatePanel(false);
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        )}
+        <button
+          type="button"
+          className="date-clear"
+          onClick={() => {
+            setFilters((prev) => ({
+              ...prev,
+              startDate: "",
+              endDate: "",
+            }));
+            setShowDatePanel(false);
+          }}
+        >
+          Clear
+        </button>
       </div>
+    </div>
+  )}
+</div>
+
     </div>
   );
 }

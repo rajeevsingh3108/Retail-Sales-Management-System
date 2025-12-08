@@ -7,27 +7,47 @@ export default function Pagination({
   hasPrev,
   onNext,
   onPrev,
+  onPageChange,
 }) {
+  const MAX_VISIBLE = 5;
+
+  let start = Math.max(1, page - Math.floor(MAX_VISIBLE / 2));
+  let end = start + MAX_VISIBLE - 1;
+
+  if (end > totalPages) {
+    end = totalPages;
+    start = Math.max(1, end - MAX_VISIBLE + 1);
+  }
+
+  const pages = [];
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
   return (
     <div className="pagination">
       <button
-        type="button"
+        className="page-btn"
         disabled={!hasPrev}
         onClick={onPrev}
-        aria-disabled={!hasPrev}
       >
         Prev
       </button>
 
-      <span>
-        Page <b>{page}</b> of <b>{totalPages}</b>
-      </span>
+      {pages.map((p) => (
+        <button
+          key={p}
+          className={`page-btn ${p === page ? "active" : ""}`}
+          onClick={() => onPageChange(p)}
+        >
+          {p}
+        </button>
+      ))}
 
       <button
-        type="button"
+        className="page-btn"
         disabled={!hasNext}
         onClick={onNext}
-        aria-disabled={!hasNext}
       >
         Next
       </button>

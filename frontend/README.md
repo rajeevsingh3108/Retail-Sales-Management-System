@@ -1,16 +1,143 @@
-# React + Vite
+# Retail-Sales-Management-System - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This frontend application provides the user interface for the Retail Sales Management System. It enables users to search, filter, sort, and paginate sales transactions through a responsive and clean dashboard built using React and Vite.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## React Compiler
+- React.js
+- Vite
+- JavaScript
+- HTML5
+- CSS3
+- Axios / Fetch API
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- Search by Customer Name and Phone Number
+- Multi-select Filters (Region, Gender, Category, Tags, Payment Method, Date Range)
+- Sorting (Date, Quantity, Customer Name)
+- Pagination (10 records per page)
+- Responsive dashboard layout
+- Dynamic data rendering from backend APIs
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Folder Structure
+
+```
+frontend/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── FiltersPanel.jsx
+│   │   ├── Pagination.jsx
+│   │   ├── SalesTable.jsx
+│   │   ├── SearchBar.jsx
+│   │   └── SortingBar.jsx
+│   ├── services/
+│   │   └── api.js
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── package-lock.json
+├── README.md
+└── vite.config.js
+```
+
+## Architecture Overview
+
+- Component-Based Architecture
+- Stateless UI components with centralized state in `App.jsx`
+- Reusable and modular UI blocks
+- REST API integration via a single service layer (`src/services/api.js`)
+- Unidirectional data flow
+
+## Component Responsibilities
+
+| Component | Responsibility |
+|---|---|
+| `SearchBar.jsx` | Handles search input |
+| `FiltersPanel.jsx` | Handles all filter selections |
+| `SortingBar.jsx` | Handles sorting options |
+| `SalesTable.jsx` | Renders transaction table |
+| `Pagination.jsx` | Handles page navigation |
+| `App.jsx` | Overall layout and state manager |
+
+## API Integration
+
+All API communication is handled through:
+
+```
+src/services/api.js
+```
+
+Responsibilities:
+
+- API request construction
+- Query parameter handling
+- Error handling
+- Response normalization
+
+## Setup Instructions
+
+1. Navigate to the frontend folder:
+
+```
+cd frontend
+```
+
+2. Install dependencies:
+
+```
+npm install
+```
+
+3. Start the development server:
+
+```
+npm run dev
+```
+
+4. Open in browser:
+
+```
+http://localhost:5173
+```
+
+## Environment Configuration
+
+If required, update backend base URL in:
+
+```
+src/services/api.js
+```
+
+## UI Guidelines Followed
+
+- Figma-based layout compliance
+- Minimal and structured dashboard
+- Sticky filter panel
+- Scrollable transaction table
+- Accessible input controls
+
+## Error Handling
+
+Graceful handling of:
+
+- No search results
+- Invalid filter combinations
+- API failures
+- Empty states
+
+## Author
+
+Rajeev Singh
+
+Retail Sales Management System – TruEstate Assignment
+

@@ -42,6 +42,12 @@ function App() {
     totalDiscount: 0,
   });
 
+  useEffect(() => {
+    if (sortBy === "customerName") setSortOrder("asc");
+    if (sortBy === "quantity") setSortOrder("desc");
+    if (sortBy === "date") setSortOrder("desc");
+  }, [sortBy]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const resetAll = () => {
@@ -69,21 +75,15 @@ function App() {
       const params = {
         search: search || undefined,
 
-        region: filters.region.length
-          ? filters.region.join(",")
-          : undefined,
+        region: filters.region.length ? filters.region.join(",") : undefined,
 
-        gender: filters.gender.length
-          ? filters.gender.join(",")
-          : undefined,
+        gender: filters.gender.length ? filters.gender.join(",") : undefined,
 
         category: filters.category.length
           ? filters.category.join(",")
           : undefined,
 
-        tags: filters.tags.length
-          ? filters.tags.join(",")
-          : undefined,
+        tags: filters.tags.length ? filters.tags.join(",") : undefined,
 
         paymentMethod: filters.paymentMethod.length
           ? filters.paymentMethod.join(",")
@@ -200,6 +200,7 @@ function App() {
         hasPrev={meta.hasPrev}
         onPrev={() => setPage((p) => Math.max(1, p - 1))}
         onNext={() => meta.hasNext && setPage((p) => p + 1)}
+        onPageChange={(p) => setPage(p)}
       />
     </div>
   );
