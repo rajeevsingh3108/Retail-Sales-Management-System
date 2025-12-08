@@ -8,6 +8,7 @@ import Pagination from "./components/Pagination";
 import "./index.css";
 
 function App() {
+  
   const [search, setSearch] = useState("");
 
   const [filters, setFilters] = useState({
