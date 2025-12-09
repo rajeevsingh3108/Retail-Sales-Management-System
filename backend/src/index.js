@@ -9,15 +9,35 @@ import metaRoutes from "./routes/metaRoutes.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://retail-sales-management-system-sigma.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("CORS not allowed"));
+    },
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true
+  })
+);
+
+app.options("*", cors());
+
 app.use(express.json());
 
 connectDB();
 
 app.use("/api/sales", salesRoutes);
 app.use("/api/meta", metaRoutes);
+
 app.get("/", (req, res) => {
-  res.send("TruEstate Retail Backend is Running");
+  res.json({ status: "OK", message: "Retail Backend Running" });
 });
 
 const PORT = process.env.PORT || 5000;
