@@ -1,6 +1,6 @@
 # Retail Sales Management System
 
-This repository contains a full-stack Retail Sales Management System built as the TruEstate SDE intern assignment. It provides a dashboard for searching, filtering, sorting, and paginating retail transaction data. The architecture is modular and designed so backend filtering/search/sorting scales to larger data sources (CSV).
+This repository contains a full-stack Retail Sales Management System.It provides a dashboard for searching, filtering, sorting, and paginating retail transaction data. The architecture is modular and designed so backend filtering/search/sorting scales to larger data sources (CSV).
 
 ## Tech Stack
 
@@ -62,8 +62,6 @@ npm run dev
 ```
 
 ## Screenshot
-
-If you have a dashboard screenshot, save it as `docs/dashboard-screenshot.png` and it will render here:
 
 ![Retail Sales Dashboard](docs/dashboard-screenshot.png)
 
